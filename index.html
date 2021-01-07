@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+
+	<p> control from DOM </p>
+	<div id="oneDiv" style="width:600px; height:200px; border:1px solid">
+		<input id="oneCheckbox" type="checkbox"/>
+	</div>
+
+	<div id="tryDelete">
+		<input id="oneCheckbox" type="checkbox"/>
+	</div>
+
+
+
+	<p> SVG element </p>
+	<div id="vizDiv">
+		<svg style="width:200px; height:600px; border: 1px lightgray solid">
+			<path d="M 10,60 40,30 50,70 60,20 80,80" style="fill:balck; stroke:gray; stroke-width:4px"/>
+			<polygon points="20,400 120,400 160,440 60,560" style="fill:teal"/>
+			<g>
+				<line x1="20" y1="300" x2="150" y2="20" style="stroke:blue; stroke-width:2px"/>
+				<rect x="100" y="400" width="50" height="25" style="fill:gray; stroke:gray; stroke-width: 2px"/>
+				<circle cx="100" cy="200" r="10" style="fill:blue; stroke:gray; stroke-width: 2px"/>
+			</g>
+		</svg>
+	</div>
+
+	<script type="text/javascript">
+
+	</script>
+
+</body>
+</html>
