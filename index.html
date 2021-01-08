@@ -31,6 +31,73 @@
 		</svg>
 	</div>
 
+
+
+	<p> stroke-width in whole size </p>
+	<svg style="width:600px; height:200px; border: 1px lightgray solid">
+		<rect x="10" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:0px" />
+		<rect x="40" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:2px" />
+		<rect x="80" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:20px" />
+		<rect x="70" y="150" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:20px" />
+	</svg>
+
+
+
+	<p> tspan: define subtext within a text </p>
+	<svg style="width:600px; height:200px; border: 1px lightgray solid">
+		<text x="70" y="100">
+			A
+			<tspan dx="10"> rightA </tspan>
+			<tspan dy="10"> downA </tspan>
+			<tspan dx="20" dy="20"> B </tspan>
+
+		</text>
+
+	</svg>
+
+
+
+	<p> group multiple elements together and scale </p>
+	<svg style="width:600px; height:200px; border: 1px lightgray solid">
+	<g>
+		<circle cx="10" cy="10" r="5"/>
+		<text> circle's label</text>
+	</g>
+
+	<g transform="translate(90,40)">
+		<circle cx="10" cy="10" r="5"/>
+		<text> circle's label</text>
+	</g>
+
+	<g transform="translate(300,100) scale(2)" > <!-- scale within transform-->
+		<circle cx="10" cy="10" r="5"/>
+		<text> circle's label</text>
+	</g>
+
+	</svg>
+
+
+
+	<p> path: open/close fill/unfill </p>
+	<svg style="width:600px; height:200px; border: 1px lightgray solid">
+		<path d="M 10,60 40,30 50,70 60,20 80,80" style="fill:none; stroke:cornflowerblue" />
+
+		<g transform="translate(100)">
+		<path d="M 10,60 40,30 50,70 60,20 80,80" style="fill:gray; stroke:cornflowerblue; stroke-width: 4px" />
+		</g>
+
+		<g transform="translate(200)">
+		<path d="M 10,60 40,30 50,70 60,20 80,80Z" style="fill:none; stroke:cornflowerblue" />
+		</g>
+
+		<g transform="translate(300)">
+		<path d="M 10,60 40,30 50,70 60,20 80,80Z" style="fill:gray; stroke:cornflowerblue; stroke-width: 4px" />
+		</g>
+	</svg>	
+
+
+
+
 	<script type="text/javascript">
 
 	</script>
