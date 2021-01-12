@@ -9,21 +9,21 @@
 
 
 	<p> enter exit </p>
-	
+	<svg>
 		<rect x="10" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:0px" />
 		<rect x="40" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:2px" />
 		<rect x="70" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:0px" />
 		<rect x="100" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:2px" />
 
-
+	</svg>
 
 	<script type="text/javascript">
-		// var svg = d3.selectAll("body")
-		// 			.append("svg")
-		// 			.attr("height", 500)
-		// 			.attr("width", 500)
+		var svg = d3.selectAll("body")
+					.append("svg")
+					.attr("height", 500)
+					.attr("width", 500)
 		var newData = [800, 200, 400, 500, 666];
-		var selection = d3.selectAll('rect')
+		var selection = svg.selectAll('rect')
                 	  .data(newData)
 	    selection.enter()
 			  .append('rect')
@@ -34,9 +34,9 @@
 			  .attr('width', 15)
 			  .attr('height', 15)
 			  .attr('fill', 'teal')
-			  .attr('stroke', "2px") //虽然没出现图像但从element可以看到，以上改动只对应超出4的第5个，从0开始是4，4*25=100
-			  // .merge(selection)
-			  // .attr('height', function(d) { return d/10}) //更新5处对应height
+			  .attr('stroke', "2px") //
+			  .merge(selection)
+			  .attr('height', function(d) { return d/10}) //更新5处对应height
 
 	</script>
 
