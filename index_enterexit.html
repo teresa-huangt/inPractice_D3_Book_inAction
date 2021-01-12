@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+
+
+	<p> stroke-width in whole size </p>
+	<svg>
+		<rect x="10" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:0px" />
+		<rect x="40" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:2px" />
+		<rect x="70" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:0px" />
+		<rect x="100" y="100" width="25" height="25"style="fill:gray; stroke:cornflowerblue; stroke-width:2px" />
+	</svg>
+
+
+	<script type="text/javascript">
+		var svg = d3.selectAll("body")
+					.append("svg")
+					.attr("height", 500)
+					.attr("width", 500)
+		var newData = [800, 200, 400, 500, 100];
+		var selection = svg.selectAll('rect')
+                	  .data(newData)
+	    selection.enter()
+			  .append('rect')
+			  .attr('x', function(d, i){
+			    return i * 25;
+			  })
+			  .attr('y', 150)
+			  .attr('height', 15)
+			  .attr('width', 15)
+			  .attr('fill', 'teal')
+			  .attr('stroke', "2px")
+
+	</script>
+
+</body>
+</html>
