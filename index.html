@@ -98,7 +98,20 @@
 
 
 
+
+
 	<script type="text/javascript">
+
+		var dataset = [1,2,3,4,5];
+		var smalldataset = dataset.filter(function (d){ return d < 5  })
+		console.log("test array filter", smalldataset)
+
+		dataset.forEach(d =>{console.log(d)})
+
+		var person = {name:"huangt", age:27, employed:false, other:["a", "b"]}
+		for (x in person){console.log(x)}
+		for (x in person){console.log(person[x])}
+		console.log("another way to get attibutes name", Object.keys(person))
 
 	</script>
 
