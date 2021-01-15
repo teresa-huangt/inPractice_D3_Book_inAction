@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+
+
+	<div id="container">
+	<svg style="width:600px; height:200px; border: 1px"/>
+	</div>
+
+
+	<script type="text/javascript">
+
+		//========================================================================
+		// 2.1.1
+		//========================================================================
+
+		// CSV dataset
+		d3.dsv(",", "cities.csv", d => console.log("using =>/direct connect to show one parameter data", d)) //一个一个输出
+		d3.dsv(",", "cities.csv").then(d => console.log("using .then() to show one parameter data", d)) //一个整体输出
+		d3.dsv(",", "cities.csv", (error, data) => {console.log("using => to show two parameter data", error,data)})//尾部多一个顺序标记，改文件名未显示错误提示
+
+		// json dataset
+		d3.json("tweets.json", d2 => console.log("can not show json data in a csv way", d2))//无输出
+		d3.json("tweets.json").then(d2 => console.log("show json data using .then()", d2))//一个整体输出
+
+		// 正确示范：haochange CSV datatype; direct connect
+		d3.dsv(",", "cities.csv", function(d){
+			return{
+				label: d.label,
+				 population: +d.population,
+				 country: d.country,
+				 x: +d.x,
+				 y: +d.y
+			}
+		}).then(function(d){
+			return console.log("after changing datatype:", d)
+		})
+
+
+		// 错误示范: change CSV datatype; .then()
+		// d3.dsv(",", "cities.csv")
+		// .then(function(d){return console.log("before changing datatype:", d)})
+		// .then(function(d){
+		// 	return{
+		// 		label: d.label,
+		// 		 population: +d.population,
+		// 		 country: d.country,
+		// 		 x: +d.x,
+		// 		 y: +d.y
+		// 	}
+		// })
+		// .then(function(d){return console.log("after changing datatype:", d)})
+
+
+
+		//========================================================================
+		// 2.1.3
+		//========================================================================
+
+		// scale number2number
+		console.log("look here")
+		var scaleNum = d3.scaleLinear().domain([0, 90000]).range([0, 900])
+		console.log(scaleNum(10000))
+		console.log(scaleNum(90000))
+		console.log(scaleNum.invert(500))
+
+		// scale number2color
+		console.log("look here")
+		var scaleCol = d3.scaleLinear().domain([0, 90000]).range(["cronflowerblue", "teal"])
+		console.log(scaleCol(10000))
+		console.log(scaleCol(90000))
+		console.log(scaleCol.invert("teal"))
+		var temp = scaleCol.invert("#008080")
+		console.log(temp)
+
+		// scale number2category
+		// quantile
+		var dataset = [423, 124, 66, 424, 58, 10, 900, 44, 1]
+		var scaleCat = d3.scaleQuantile().domain(dataset).range(["A","B","C"])
+		console.log("d3.scaleQuantile:", scaleCat(1))
+		console.log("d3.scaleQuantile:", scaleCat(58))
+		// quantize
+		var scaleCat = d3.scaleQuantile().domain([1,900]).range(["A","B","C"])
+		console.log("d3.scaleQuantize:", scaleCat(1))
+		console.log("d3.scaleQuantize:", scaleCat(58))
+
+
+
+		// nesting
+		// d3.nest becomes d3.group; https://observablehq.com/@d3/d3v6-migration-guide#group
+		console.log("nesting")
+
+		var nestTweets1 = d3.json("tweets.json").then(d => console.log("check d.tweets:",d.tweets))////正确输出,但nestTweets不对
+
+		var nestTweets2 = d3.json("tweets.json").then(d => d.tweets)//输出有promise，nestTweets不对
+		var nestTweets3 = d3.json("tweets.json").then(d => {var nestTweets4 = d.tweets})//输出有promise，nestTweets不对
+
+		var nestTweets6 = []
+		var nestTweets5 = d3.json("tweets.json").then(function(d) {return nestTweets6 = d.tweets}) //正确输出
+		var nestTweets8 = []
+		var nestTweets7 = d3.json("tweets.json").then(d => nestTweets8 = d.tweets)//正确输出
+
+		//console.log("check nestTweets8:", nestTweets8)//直接在console输出正确，这里输出为空
+		//var groupTweets = d3.group(nestTweets8, d => d.user)//直接在console输出正确，这里输出为空
+		var nestTweets = []; 
+		d3.json("tweets.json").then(function(d) {return nestTweets = d.tweets;
+				//var groupTweets = d3.group(nestTweets6, d => d.user)
+				// console.log("check d3.group", d3.group(nestTweets6, d => d.user))
+				})
+		
+		// official example
+		data = [
+				  {name: "jim",   amount: "34.0",   date: "11/12/2015"},
+				  {name: "carl",  amount: "120.11", date: "11/12/2015"},
+				  {name: "stacy", amount: "12.01",  date: "01/04/2016"},
+				  {name: "stacy", amount: "34.05",  date: "01/04/2016"}
+				]
+		var group = d3.group(data, d => d.name)
+
+
+
+		//========================================================================
+		// 2.1.4
+		//========================================================================
+
+
+
+
+		
+
+
+	</script>
+
+</body>
+</html>
