@@ -108,9 +108,10 @@
 		//console.log("check nestTweets8:", nestTweets8)//直接在console输出正确，这里输出为空
 		//var groupTweets = d3.group(nestTweets8, d => d.user)//直接在console输出正确，这里输出为空
 		var nestTweets = []; 
-		d3.json("tweets.json").then(function(d) {return nestTweets = d.tweets;
+		d3.json("tweets.json").then(function(d) { nestTweets = d.tweets;
+				console.log(nestTweets)
 				//var groupTweets = d3.group(nestTweets6, d => d.user)
-				// console.log("check d3.group", d3.group(nestTweets6, d => d.user))
+				console.log("check d3.group", d3.group(nestTweets, d => d.user))
 				})
 		
 		// official example
