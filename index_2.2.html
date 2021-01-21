@@ -12,16 +12,26 @@
 	<svg style="width:600px; height:200px; border: 1px"/>
 	</div> -->
 	<div> 
-	<svg id="placeholder1"; style="width:600px; height:200px; border: 1px"></svg>
+	<svg id="placeholder1"; style="width:600px; height:100px; border: 1px"></svg>
 	</div>
 	<div> 
-	<svg id="placeholder2"; style="width:600px; height:200px; border: 1px"></svg>
+	<svg id="placeholder2"; style="width:600px; height:100px; border: 1px"></svg>
 	</div>
 	<div> 
-	<svg id="placeholder3"; style="width:600px; height:200px; border: 1px"></svg>
+	<svg id="placeholder3"; style="width:600px; height:100px; border: 1px"></svg>
 	</div>
 	<div> 
-	<svg id="placeholder4"; style="width:600px; height:200px; border: 1px"></svg>
+	<svg id="placeholder4"; style="width:600px; height:100px; border: 1px"></svg>
+	</div>
+
+	<!-- 2.2.3 -->
+	<div> 
+	<p> celling </p>
+	<svg id="placeholder5"; style="width:600px; height:100px; border: 1px"></svg>
+	</div>
+	<div> 
+	<p> celling + yScale</p>
+	<svg id="placeholder6"; style="width:600px; height:100px; border: 1px"></svg>
 	</div>
 
 	<script type="text/javascript">
@@ -110,7 +120,35 @@
 			.attr("height", d=>d)
 			.attr("opacity", .25)
 			.attr("x", (d,i)=>i*10)
-			.attr("y", d=>200-d)
+			.attr("y", d=>100-d)
+
+		//========================================================================
+		// 2.2.3
+		//========================================================================
+		d3.select("#placeholder5")
+			.selectAll("rect")
+			.data([150, 50, 9999, 8, 100, 120])
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d=>d)
+			.attr("opacity", .25)
+			.attr("x", (d,i)=>i*10)
+			.attr("y", d=>100-d)
+
+		var yScale = d3.scaleLinear().domain([ 0, 9999 ]).range([ 0, 99 ]).clamp(true);
+		d3.select("#placeholder6")
+			.selectAll("rect")
+			.data([150, 50, 9999, 8, 100, 120])
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d=>yScale(d))
+			.attr("opacity", .25)
+			.attr("x", (d,i)=>i*10)
+			.attr("y", d=>100-yScale(d))
+
+		console.log("yScale out max range", yScale(19999)) // check before and after clamp()
 
 
 	</script>
