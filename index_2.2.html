@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+
+
+	<!-- <div id="container">
+	<svg style="width:600px; height:200px; border: 1px"/>
+	</div> -->
+	<div> 
+	<svg id="placeholder1"; style="width:600px; height:200px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:200px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:200px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:200px; border: 1px"></svg>
+	</div>
+
+	<script type="text/javascript">
+
+		//========================================================================
+		// 2.2.1
+		//========================================================================
+		// d3.dsv(",", "cities.csv", (error, data)=>{
+		// 	if(error){console.error(error)}
+		// 	else{dataViz(data)} 
+		// })
+
+		// d3.dsv(",", "cities.csv").then((error, data)=>{
+		// 	if(error){console.error(error)}
+		// 	else{dataViz(data)} 
+		// })
+
+		d3.dsv(",", "cities.csv").then(data=>{
+			dataViz(data)
+			console.log("check")
+		})
+
+
+		function dataViz(incomingData){
+			//var svg = d3.select("body").append("svg").attr("width", 500).attr("height", 500)
+			//svg//
+
+			// WAY1
+			d3.select("body")
+				.selectAll("div.cities")
+				.data(incomingData)
+				.enter()
+				.append("div")
+				.attr("class", "cities")
+				.html(incomingData=>incomingData.label)
+
+			// WAY2
+			var svg = d3.select("body").append("svg").attr("width", 500).attr("height", 500)
+			svg.selectAll("div.cities")
+				.data(incomingData)
+				.enter()
+				.append("div")
+				.attr("class", "cities")
+				.html(incomingData=>incomingData.label)
+		}
+
+		//console.log(document.getElementsByClassName('cities')[0])
+
+
+		//========================================================================
+		// 2.2.2
+		//========================================================================
+		d3.select("#placeholder1")
+			.selectAll("rect")
+			.data([15, 50, 22, 8, 100, 10])
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d=>d)
+
+		d3.select("#placeholder2")
+			.selectAll("rect")
+			.data([15, 50, 22, 8, 100, 10])
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d=>d)
+			.attr("opacity", .25)
+
+		d3.select("#placeholder3")
+			.selectAll("rect")
+			.data([15, 50, 22, 8, 100, 10])
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d=>d)
+			.attr("opacity", .25)
+			.attr("x", (d,i)=>i*10)
+
+		d3.select("#placeholder4")
+			.selectAll("rect")
+			.data([15, 50, 22, 8, 100, 10])
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d=>d)
+			.attr("opacity", .25)
+			.attr("x", (d,i)=>i*10)
+			.attr("y", d=>200-d)
+
+
+	</script>
+
+</body>
+</html>

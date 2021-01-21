@@ -128,6 +128,26 @@
 		//========================================================================
 		// 2.1.4
 		//========================================================================
+		var testArray = [88, 10000, 1, 75, 12, 35]
+		
+		var min = d3.min(testArray, d=>d)
+		console.log("show 2.1.4 min", min)
+
+		var max = d3.max(testArray, d=>d)
+		console.log("show 2.1.4 min", max)
+
+		var mean = d3.mean(testArray, d=>d)
+		console.log("show 2.1.4 min", mean)
+
+
+		d3.dsv(",", "cities.csv").then(data =>{
+			var min = d3.min(data, el=> +el.population)
+			console.log("show min populaion", min)
+		})
+
+			
+	
+
 
 
 
