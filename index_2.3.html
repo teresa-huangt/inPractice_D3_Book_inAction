@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+
+	//========================================================================
+	// 2.3.1
+	//========================================================================
+	d3.dsv(",", "cities.csv").then(data=>{
+			dataViz(data)
+			console.log("check")
+		})
+
+	function dataViz(incomingData){
+		var maxPopulation = d3.max(incomingData, d=>+d.population)
+		//console.log("maxPopulation", maxPopulation)
+		var yScale = d3.scaleLinear().domain([0, maxPopulation]).range([0, 400])
+		//console.log("yScale", yScale(maxPopulation))
+
+		// var svg = d3.select("body").append("svg").attr("width", 500).attr("height", 500)
+		// svg
+		d3.select("#placeholder1")
+			.selectAll("rect")
+			.data(incomingData)
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d => yScale(+d.population))
+			.attr("x", (d,i) => i*10)
+			.attr("y", d => 500- yScale(+d.population))
+			.attr("fill", "cornflowerblue")
+			.attr("opacity", 0.7)
+			.attr("stroke", "teal")
+			.attr("stroke-width", "2px")
+
+	}
+
+
+
+	var nestTweets = []; 
+	d3.json("tweets.json").then(data =>{ 
+		dataVizJson(data)
+	})
+
+	function dataVizJson(incomingData){
+		nestTweets = incomingData.tweets
+		console.log(nestTweets)
+		var groupTweets = d3.group(nestTweets, d => d.user)
+		console.log(groupTweets)
+		// var groupTweets = d3.key(d => d.user).entries(incomingData)
+		// console.log(groupTweets)
+
+		// groupTweets.forEach(d =>{
+		// 	d.numTweets = d.length
+		// 	console.log(d.numTweets)
+		// })
+		// console.log(groupTweets)
+
+		var maxTweets = d3.max(groupTweets, d=> {
+			console.log(d)
+			return d[1].length
+
+		})
+		console.log(maxTweets)
+
+		var yScale = d3.scaleLinear().domain([ 0, maxTweets]).range([ 0,500])
+		console.log(yScale(maxTweets))
+
+		// var svg = d3.select("body").append("svg").attr("width", 500).attr("height", 500)
+		// svg
+		d3.select("#placeholder2")
+			.selectAll("rect")
+			.data(groupTweets)
+			.enter()
+			.append("rect")
+			.attr("width", 10)
+			.attr("height", d => {
+				console.log(d)
+				console.log(d[1].length)
+				return yScale(d[1].length)
+			})
+			.attr("x", (d,i) => i*10)
+			.attr("y", d => 500- yScale(+d[1].length))
+			.attr("fill", "green")
+			.attr("opacity", 0.7)
+			.attr("stroke", "teal")
+			.attr("stroke-width", "2px")
+
+	}
+
+	//========================================================================
+	// 2.3.2
+	//========================================================================
+	var nestTweets = []; 
+	d3.json("tweets.json").then(data =>{ 
+		dataVizJson(data)
+	})
+
+	function dataVizJson(incomingData){
+		console.log("check incoming data:", incomingData)
+
+		nestTweets = incomingData.tweets
+		console.log("check nestTweets:", nestTweets)
+
+		console.log("check value ", [nestTweets[0].favorites.length, nestTweets[0].retweets.length] )
+
+		nestTweets[0].impact = nestTweets[0].favorites.length + nestTweets[0].retweets.length
+		console.log("check combine", nestTweets[0].impact)
+
+		var maxImpact = d3.max(nestTweets, d=> {
+			//console.log("check nestTweets:", nestTweets)
+			console.log("check combine in maxloop", d.favorites.length + d.retweets.length)
+			return d.favorites.length + d.retweets.length
+		})
+		console.log("maxImpact", maxImpact)
+
+		var startEnd = d3.extent(nestTweets, d=> Date.parse(d.timestamp))
+		console.log("startEnd", startEnd)
+
+		var timeRamp = d3.scaleTime().domain(startEnd).range([20,480]);
+        var yScale = d3.scaleLinear().domain([0,maxImpact]).range([0,460]);
+        var radiusScale = d3.scaleLinear()
+          .domain([0,maxImpact]).range([1,20]);
+        var colorScale = d3.scaleLinear()
+          .domain([0,maxImpact]).range(["white","#75739F"]);
+
+      	d3.select("#placeholder3")
+			.selectAll("circle")
+			.data(nestTweets)
+			.enter()
+          	.append("circle")
+            .attr("r", d => radiusScale(d.favorites.length + d.retweets.length))
+            .attr("cx", d => timeRamp(Date.parse(d.timestamp)))
+            .attr("cy", d => 480 - yScale(d.favorites.length + d.retweets.length))
+            .style("fill", d => colorScale(d.favorites.length + d.retweets.length))
+            .style("stroke", "black")
+            .style("stroke-width", "1px");
+	}
+	
+				
+
+	</script>
+
+</body>
+</html>
