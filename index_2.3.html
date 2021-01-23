@@ -15,6 +15,9 @@
 	<div> 
 	<svg id="placeholder3"; style="width:600px; height:500px; border: 1px"></svg>
 	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
 
 
 	<script type="text/javascript">
@@ -152,7 +155,65 @@
             .style("stroke", "black")
             .style("stroke-width", "1px");
 	}
+
+	//========================================================================
+	// 2.3.3
+	//========================================================================
+	var nestTweets = []; 
+	d3.json("tweets.json").then(data =>{ 
+		dataVizJson4(data)
+	})
+
+	function dataVizJson4(incomingData){
+		nestTweets = incomingData.tweets
+
+		var maxImpact = d3.max(nestTweets, d=> {
+			return d.favorites.length + d.retweets.length
+		})
+
+		var startEnd = d3.extent(nestTweets, d=> Date.parse(d.timestamp))
+		var timeRamp = d3.scaleTime().domain(startEnd).range([20,480]);
+        var yScale = d3.scaleLinear().domain([0,maxImpact]).range([0,460]);
+        var radiusScale = d3.scaleLinear()
+          .domain([0,maxImpact]).range([1,20]);
+        var colorScale = d3.scaleLinear()
+          .domain([0,maxImpact]).range(["white","#75739F"]);
+
+	var tweetsGroup = d3.select("#placeholder4")
+		.selectAll("g")
+		.data(nestTweets, JSON.stringify)
+		.enter()
+		.append("g")
+	    .attr("transform", d => "translate(" + timeRamp(Date.parse(d.timestamp)) + "," + (480 - yScale(d.favorites.length + d.retweets.length)) + ")" )
+
+    tweetsGroup.append("circle")
+    			.attr("r", d=> radiusScale(d.favorites.length + d.retweets.length))
+    			.attr("fill", "black")
+	tweetsGroup.append("text") //要加tweetsGroup,不然变成<circle><text></text><circle>不能显示
+	//加上tweetsGroup之后，<circle>的一行，<text>的一行
+    			.text((d,i)=> d.user+"-"+i+"-"+(d.favorites.length + d.retweets.length))
+    			.attr("stroke", "black")
+    			.style("font-size", "25px")
+    			//.text(d=>d)
+
+	d3.selectAll("g").data([1,2,3,4]).exit().remove()
+
+	d3.selectAll("g").each(d=>console.log("selectAll g",d))
+	d3.selectAll("text").each(d=>console.log("selectAll text",d)) //这里不是输出的文字，而是整个array注意看
+	d3.selectAll("circle").each(d=>console.log("selectAll circle",d))
+
+	var filterData = nestTweets.filter(d=>{
+		console.log("check", d.favorites.length + d.retweets.length)
+		return (d.favorites.length + d.retweets.length)>3
+	} )
+	console.log("check nestTweets", nestTweets)
+
+	tweetsGroup.selectAll("circle")
+		.data(filterData, d => JSON.stringify(d))
+		.exit()
+		.remove()
 	
+	}
 				
 
 	</script>
