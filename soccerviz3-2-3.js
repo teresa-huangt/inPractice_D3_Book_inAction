@@ -1,21 +1,10 @@
-// The method of creating soccer visualization,
-// it is designed for being operated as being required
+// practice for 3.2.3 using thins
 function createSoccerViz(){
-	// Say-hi section
-	console.log('Hi there, createSoccerViz is called.')
 
-	// For some unknown stupid design in JS runtime,
-	// it will operate **Script** and **Say-hi** section firstly,
-	// and then operate d3.dsv function, which is slow,
-	// and ignore the coding order of the scripts.
-
-	// D3 dsv section
 	d3.dsv(",", "worldcup.csv").then(data => {
 		overallTeamViz(data)
 	})
 
-	// Function section
-	// Being called in D3 dsv section
 	function overallTeamViz(incomingData){
 		d3.select("svg")
 			.append("g")
@@ -34,31 +23,6 @@ function createSoccerViz(){
 		var teamG = d3.selectAll("g.overallG")
 		console.log(teamG)
 
-		// color start
-		fillColor = d3.rgb("pink")
-			
-			// test in text
-		var colorScale = d3.scaleLinear()
-						  .interpolate(d3.interpolateLab) //Hsl Hcl	Lab
-						  .domain([0,20]).range(["yellow", "blue"])
-			//	test in text		  
-		 var tenColorScale = d3.scaleOrdinal()
-		 						.domain(["UEFA", "AFC"])
-		 						.range(d3.schemeCategory10)
-		 						.unknown("gray")
-		var CBcolorScale = d3.scaleQuantize() //同linear但是不用加差值那句
-							.domain([0,10]).range(colorbrewer.Reds[3])
-	    // color end 
-
-
-		// teamG.append("circle")
-		// 	 .attr("r", 10) //"10px" also right
-		//      //.attr("cx", (d,i)=>{return } )
-		//      .style("fill", "pink")
-	 //         .style("stroke", "black")
-	 //         .style("stroke-width", "1px")
-
-
 	 	// 3.2.2 add transition
 	 	teamG.append("circle")
 			 .attr("r", 0) 
@@ -69,35 +33,30 @@ function createSoccerViz(){
 		 	.transition()
 			 	//.delay((d,i)=> i*100)
 			 	.duration(500)
-			 	.attr("r", 20)
+			 	.attr("r", 10)
 
-		     .style("fill", (d,i)=> fillColor.brighter(i*0.1))
+		     .style("fill", "pink")
 	         .style("stroke", "black")
-	         .style("stroke-width", "2px")
+	         .style("stroke-width", "1px")
          // 3.2.2 end
 
 	    console.log('The teamsG in function section:', document.getElementById('teamsG'))
 
-	    // 3.2.3 this + node ++ raise lower
+	    // 3.2.3 this + node
 	    d3.select("circle").each(function(d,i){
 	    	console.log("check each d",d)
-	    	console.log("check each i",i)
+	    	console.log("check each d",i)
 	    	console.log("compare with this", this)
 	    })
 	    console.log("check .node()", d3.select("circle").node())
 	    
-	   
 	    // 3.2.3 end
 
 	    teamG.append("text")
 	    		.attr("y", 60)
 	    		.style("text-anchor", "middle")
-	    		.style("font-size", "12px")
+	    		.style("font-size", "10px")
 	    		.text(d=>d.team)
-	    		//.style("fill", (d,i)=>colorScale(i))
-	    		// .style("fill", (d,i)=>tenColorScale(d.region))
-	    		.style("fill", (d,i)=>CBcolorScale(i))
-	    		
 
 		// 3.2.1 .on(mouseover)
 		// teamG.on("mouseover", m=>{
@@ -112,46 +71,24 @@ function createSoccerViz(){
 		})
 		function highlightRegion([m, md]){
 			//console.log("check mouseover d ", d)
+			console.log("check this in highlightRegion", this)
+			d3.select(this).select("text").style("fill", "red").attr("y", 30)
 			d3.selectAll("g.overallG")
 				.select("circle")
-				// .attr("class", c=>{
-				// 	console.log("check c", c) //circleS对应<>
-				// 	console.log("check c.region", c.region)
-				// 	console.log("check md.region", md.region)
-				// 	console.log("check T|F", c.region === md.region)
-				// 	//return c.region === md.region ? "active": "inactive"
-				// })
 				.style("fill", c=>{
 					console.log("check c", c) //circleS对应<>
 					console.log("check c.region", c.region)
 					console.log("check md.region", md.region)
 					console.log("check T|F", c.region === md.region)
-					return c.region === md.region ? "red": fillColor.brighter(0.5)//.darker(0.5)//"gray"
+					return c.region === md.region ? "red": "gray"
 				})
-			d3.selectAll("g.overallG")
-				.select("text")
-				.attr("y", y=> {
-					return y.team === md.team ? "20": "60"
-				})
-				.style("font-size", f=>{
-					return f.team === md.team ? "30": "10"
-				})
-				.style("fill", t=>{
-					console.log("===========")
-					console.log("check t.team", t.team)
-					console.log("check md.region", md.team)
-					console.log("check T|F", t.team === md.team)
-					return t.team === md.team ? "cornflowerblue": "gray"
-				})
-				.style("pointer-events", "none") //3.2.3 避免遮挡
-
 
 		}
 
 		teamG.on("mouseout", function(){
 			d3.selectAll("g.overallG")
 				.select("circle")
-				.style("fill", (d,i)=>fillColor.darker(i*0.1))
+				.style("fill", "gray")
 				//.classed("inactive", false).classed("active",false)
 		})
 
