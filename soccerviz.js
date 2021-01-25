@@ -1,6 +1,7 @@
 // The method of creating soccer visualization,
 // it is designed for being operated as being required
 function createSoccerViz(){
+	
 	// Say-hi section
 	console.log('Hi there, createSoccerViz is called.')
 
@@ -97,6 +98,13 @@ function createSoccerViz(){
 	    		//.style("fill", (d,i)=>colorScale(i))
 	    		// .style("fill", (d,i)=>tenColorScale(d.region))
 	    		.style("fill", (d,i)=>CBcolorScale(i))
+
+		// 3.3.1
+		 d3.selectAll("g.overallG")
+		 	.insert("image", "text")
+            .attr("xlink:href", d => `./image/${d.team}.png`) //esc下面的~·
+            .attr("width", "45px").attr("height", "20px")
+            .attr("x", "-22").attr("y", "-10");
 	    		
 
 		// 3.2.1 .on(mouseover)
@@ -145,7 +153,6 @@ function createSoccerViz(){
 				})
 				.style("pointer-events", "none") //3.2.3 避免遮挡
 
-
 		}
 
 		teamG.on("mouseout", function(){
@@ -189,6 +196,90 @@ function createSoccerViz(){
 				.attr("r", d=>radiusScale(d[bunttonData]))
 
         }
+
+        // 添加表格，点选再添加数字
+        d3.text("modal.html").then(data => {
+		console.log("addtable modal html data+++++++++++++!", data)
+		var htmldata = d3.select("body").append("div").attr("id", "modal").append("html").html(data) //也可以不加append html，h5结构不同但显示形式相同
+		//return htmldata
+	  	})
+
+	  	//var teamG = d3.selectAll("g.overallG")
+		teamG.on("click", (c,cmd)=>{
+			console.log("---------------")
+			console.log("check click c,cmd", [c,cmd])
+			return teamClick(c,cmd)
+			})
+
+		function teamClick(c,cmd){
+			var selectValue = Object.values(cmd)
+			console.log("check selectValue:", [selectValue])
+			//console.log("check teamClick c+++++++++++++", [c,cmd])
+			d3.selectAll("td.data")
+				.data(selectValue)
+				//.enter()
+				//.append("td")
+				.html(p =>{
+					console.log("check p:", p)
+					return p
+				})
+		}
+
+		// 添加SVG icon
+		d3.html("icon.svg").then(svgData=>{
+			console.log("check svgData ***********", svgData)
+			return loadSVG(svgData)
+		})
+
+		// way1
+		// function loadSVG(svgData){
+		// 	console.log("check enter loadSVG function")
+		// 	while(!d3.select(svgData).selectAll("path").empty()) {
+		// 	  	d3.select("svg").node().appendChild(
+		// 	    d3.select(svgData).select("path").node()
+		// 	    )
+		//     }
+		//     d3.selectAll("path").attr("transform", "translate(50,250)")
+		// }
+
+		// way2
+		// function loadSVG(svgData) {
+	 //    d3.select(svgData).selectAll("path").each(function() {
+	 //    	//console.log("check svgData each this", this)
+	 //        d3.select("svg").node().appendChild(this);
+	 //    })
+	 //    d3.selectAll("path").attr("transform", "translate(50,50)");
+		// }
+
+
+		//way3
+		function loadSVG(svgData) {
+		    d3.selectAll("g").each(function() {
+		    var gParent = this;
+		    d3.select(svgData).selectAll("path").each(function() {
+		          gParent.appendChild(this.cloneNode(true))
+		      })
+		    })
+		    // change svg path color way1
+			// d3.selectAll("path").style("fill", "darkred")
+			// .style("stroke", "black").style("stroke-width", "1px");
+
+			// change svg path color way2
+			d3.selectAll("g.overallG").each(function(d) {
+			    d3.select(this).selectAll("path").datum(d)
+			});
+
+			var tenColorScale = d3.scaleOrdinal()
+			 						.domain(["UEFA", "CONMEBOL", "CAF", "AFC"])
+			 						.range(d3.schemeCategory10)
+			 						.unknown("gray")
+
+			d3.selectAll("path").style("fill", function(p) {
+				console.log("???????????????",p)
+			    return tenColorScale(p.region)
+			}).style("stroke", "black").style("stroke-width", "2px");
+		}
+
 	}
 
 	// Script section
@@ -196,8 +287,8 @@ function createSoccerViz(){
 	// this script section is **ONLY** operated when the .js file being imported by <src> section in HTML
 	console.log('The teamsG in script section:', document.getElementById('teamsG'))
 
-	// Web browser platform
-	// Google Chrome
-    // 版本 87.0.4280.141（正式版本） (x86_64)
+
 }
+
+
 
