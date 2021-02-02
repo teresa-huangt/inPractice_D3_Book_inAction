@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	d3.dsv(",", "boxplot.csv").then(data=>{
+		dataViz(data)
+		console.log("check boxplot data loaded", data)
+	})
+	var gridSize = 450
+	function dataViz(incomingData){
+		//scale
+		var xScale = d3.scaleLinear().domain([1,8]).range([50,gridSize])
+		var yScale = d3.scaleLinear().domain([0,100]).range([gridSize,50])
+
+		//axis
+		xAxis = d3.axisBottom().scale(xScale).tickSize(gridSize-50).ticks(10) //tickSize长度等于scaleMax=设置grid
+		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis).attr("transform", "translate(0,50)")
+
+		yAxis = d3.axisRight().scale(yScale).tickSize(gridSize).ticks(5)
+		d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis).attr("transform", "translate(50,0)")
+
+		//median circle
+		d3.select("#placeholder1")
+			.selectAll("circle.median")
+			.data(incomingData)
+			.enter()
+			.append("circle")
+			.attr("class", "tweets")
+			.attr("r", 5)
+			.attr("cx", d=>xScale(d.day))
+			.attr("cy", d=>yScale(d.median))
+			.style("fill","darkgray")
+
+		//box minmax
+		d3.select("#placeholder1")
+			.selectAll("g.box")
+			.data(incomingData)
+			.enter()
+			.append("g")
+			.attr("class", "box")
+			.attr("transform", d=>"translate(" + xScale(d.day) +","+ yScale(d.median) +")")
+			.each(function(d,i){ //不能写成（d,i)=>{},这里加花括号程序会在后面同时补一个要注意
+				d3.select(this)
+					.append("rect")
+					.attr("width", 20)
+					.attr("height", yScale(d.q1) - yScale(d.q3))
+					.attr("x", -10) //以之前tranform之后结果继续移动，也就是median那个点为基准
+					.attr("y", yScale(d.q3)- yScale(d.median))
+			})
+			.style("fill", "cornflowerblue")
+			.style("stroke", "blue")
+			.style("opacity", 0.5)
+
+		
+
+	}
+	</script>
+</body>
+</html>

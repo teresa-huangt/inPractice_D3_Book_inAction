@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+
+		// dataset
+		var scatterData = [
+		{friends:5, salary:22000},
+		{friends:3, salary:18000},
+		{friends:10, salary:88000},
+		{friends:0, salary:18000},
+		{friends:27, salary:56000},
+		{friends:8, salary:74000}
+		]
+
+		//scale
+		var xExtent = d3.extent(scatterData, d=>d.salary)
+		var yExtent = d3.extent(scatterData, d=>d.friends)
+		var xScale = d3.scaleLinear().domain(xExtent).range([50,500])
+		var yScale = d3.scaleLinear().domain(yExtent).range([50,450])
+
+		//axis
+		xAxis = d3.axisBottom().scale(xScale).tickSize(400).ticks(10) //tickSize长度等于scaleMax=设置grid
+		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis).attr("transform", "translate(0,50)")
+
+		yAxis = d3.axisRight().scale(yScale).tickSize(450).ticks(5)
+		d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis).attr("transform", "translate(50,0)")
+
+		//scatter/circle
+		d3.select("#placeholder1")
+			.selectAll("circle")
+			.data(scatterData)
+			.enter()
+			.append("circle")
+			.attr("r", 5)
+			.attr("cx", d=>xScale(d.salary))
+			.attr("cy", d=>yScale(d.friends))
+
+	</script>
+</body>
+</html>
