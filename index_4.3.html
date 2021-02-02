@@ -26,17 +26,20 @@
 		console.log("check boxplot data loaded", data)
 	})
 	var gridSize = 450
+	var testSize =440
 	function dataViz(incomingData){
 		//scale
 		var xScale = d3.scaleLinear().domain([1,8]).range([50,gridSize])
 		var yScale = d3.scaleLinear().domain([0,100]).range([gridSize,50])
 
 		//axis
-		xAxis = d3.axisBottom().scale(xScale).tickSize(gridSize-50).ticks(10) //tickSize长度等于scaleMax=设置grid
-		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis).attr("transform", "translate(0,50)")
+		xAxis = d3.axisBottom().scale(xScale).tickSize(-gridSize).tickValues([1,2,3,4,5,6,7])//.ticks(8)// //tickSize长度等于scaleMax=设置grid
+		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis).attr("transform", `translate(0,${gridSize})`)
+		d3.select("#xAxisG > path.domain").style("display", "none") //path.domain在xAxisG内部 //后台打开找到<path>鼠标悬停不显示蓝色阴影框了
 
-		yAxis = d3.axisRight().scale(yScale).tickSize(gridSize).ticks(5)
-		d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis).attr("transform", "translate(50,0)")
+		yAxis = d3.axisRight().scale(yScale).tickSize(-gridSize).ticks(5)
+		// d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis).attr("transform", "translate(50,0)")
+		d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis).attr("transform",`translate(${gridSize},0)`) //y轴带label的落在右侧，横线向左
 
 		//median circle
 		d3.select("#placeholder1")
@@ -59,16 +62,70 @@
 			.attr("class", "box")
 			.attr("transform", d=>"translate(" + xScale(d.day) +","+ yScale(d.median) +")")
 			.each(function(d,i){ //不能写成（d,i)=>{},这里加花括号程序会在后面同时补一个要注意
+				
+
+				//box-range
+				d3.select(this)
+					.append("line")
+					.attr("class", "range")
+					.attr("x1", 0)
+					.attr("y1", yScale(d.max) - yScale(d.median))
+					.attr("x2", 0)
+					.attr("y2", yScale(d.min) - yScale(d.median))
+					.style("stroke", "black")
+					.style("stroke-width", "4px")
+
+				//box-max
+				d3.select(this)
+					.append("line")
+					.attr("class", "range")
+					.attr("x1", -10)
+					.attr("y1", yScale(d.max) - yScale(d.median))
+					.attr("x2", 10)
+					.attr("y2", yScale(d.max) - yScale(d.median))
+					.style("stroke", "black")
+					.style("stroke-width", "4px")
+
+				//box-min
+				d3.select(this)
+					.append("line")
+					.attr("class", "range")
+					.attr("x1", -10)
+					.attr("y1", yScale(d.min) - yScale(d.median))
+					.attr("x2", 10)
+					.attr("y2", yScale(d.min) - yScale(d.median))
+					.style("stroke", "black")
+					.style("stroke-width", "4px")
+
+				//box-rect //图层位于rangeline之上
 				d3.select(this)
 					.append("rect")
+					.attr("class", "q1q3box")
 					.attr("width", 20)
 					.attr("height", yScale(d.q1) - yScale(d.q3))
 					.attr("x", -10) //以之前tranform之后结果继续移动，也就是median那个点为基准
 					.attr("y", yScale(d.q3)- yScale(d.median))
+					.style("fill", "cornflowerblue")
+					.style("stroke", "blue")
+					.style("opacity", 0.9)
+
+				//box-median
+				d3.select(this)
+					.append("line")
+					.attr("class", "range")
+					.attr("x1", -10)
+					.attr("y1", 0)
+					.attr("x2", 10)
+					.attr("y2", 0)
+					.style("stroke", "black")
+					.style("stroke-width", "4px")
+
+
+				
+
+
 			})
-			.style("fill", "cornflowerblue")
-			.style("stroke", "blue")
-			.style("opacity", 0.5)
+
 
 		
 
