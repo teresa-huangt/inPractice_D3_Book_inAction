@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+
+	//
+	d3.dsv(",", "tweetdata.csv").then(data=>{
+		LineViz(data)
+		console.log("check data loaded", data)
+		console.log("check again2")
+	})
+	
+	function LineViz(incomingData){
+		//scale
+		var xScale = d3.scaleLinear().domain([1,10.5]).range([20,470])
+		var yScale = d3.scaleLinear().domain([0,40]).range([470,20])
+
+		//axis
+		xAxis = d3.axisBottom().scale(xScale).tickValues([1,2,3,4,5,6,7,8,9,10]).tickSize(470)
+		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis)
+
+		yAxis = d3.axisRight().scale(yScale).ticks(10).tickSize(470) //坐标轴在左去掉tickSize
+		d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis)
+
+		
+		//3 type circles
+		d3.select("#placeholder1")
+			.selectAll("circle.tweets")
+			.data(incomingData)
+			.enter()
+			.append("circle")
+			.attr("class", "tweets")
+			.attr("r", 5)
+			.attr("cx", d=>xScale(d.day))
+			.attr("cy", d=>yScale(d.tweets))
+			.style("fill",green0)
+
+		d3.select("#placeholder1")
+			.selectAll("circle.retweets")
+			.data(incomingData)
+			.enter()
+			.append("circle")
+			.attr("class", "retweets")
+			.attr("r", 5)
+			.attr("cx", d=>xScale(d.day))
+			.attr("cy", d=>yScale(d.retweets))
+			.style("fill",green1)
+
+		d3.select("#placeholder1")
+			.selectAll("circle.favorites")
+			.data(incomingData)
+			.enter()
+			.append("circle")
+			.attr("class", "favorites")
+			.attr("r", 5)
+			.attr("cx", d=>xScale(d.day))
+			.attr("cy", d=>yScale(d.favorites))
+			.style("fill",green2)
+
+		// line
+		var favoritesLine = d3.line()
+								.x(d=>xScale(d.day))
+								.y(d=>yScale(d.favorites))
+		favoritesLine.curve(d3.curveCardinal)
+
+		d3.select("#placeholder1")
+			.append('path')
+			.attr("d", favoritesLine(incomingData))
+			.attr("stroke", green2)
+			.attr("stroke-width", "5px")
+			.attr("fill","none")
+
+
+		var retweetsLine = d3.line()
+								.x(d=>xScale(d.day))
+								.y(d=>yScale(d.retweets))
+								// create gap
+								.defined(function (d) {
+									// console.log("test", [d, d.retweets])
+									// console.log("",d.retweets !== '')
+									return d.retweets !== ''
+								})
+								.curve(d3.curveStep)
+
+		d3.select("#placeholder1")
+			.append('path')
+			.attr("d", retweetsLine(incomingData))
+			.attr("stroke", green1)
+			.attr("stroke-width", "5px")
+			.attr("fill","none")
+
+		var tweetsLine = d3.line()
+								.x(d=>xScale(d.day))
+								.y(d=>yScale(d.tweets))
+		tweetsLine.curve(d3.curveBasis)
+
+		d3.select("#placeholder1")
+			.append('path')
+			.attr("d", tweetsLine(incomingData))
+			.attr("stroke", green0)
+			.attr("stroke-width", "5px")
+			.attr("fill","none")
+
+		//curve type 位置错误不执行
+		// favoritesLine.curve(d3.curveCardinal)
+
+
+
+		
+
+	}
+	</script>
+</body>
+</html>

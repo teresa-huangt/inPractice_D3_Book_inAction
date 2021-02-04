@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:600px; height:500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	//
+	d3.dsv(",", "movies.csv").then(data=>{
+		StreamgraphViz(data)
+		console.log("check data loaded", data)
+	})
+	
+	function StreamgraphViz(incomingData){
+		//scale
+		var xScale = d3.scaleLinear().domain([1,8]).range([20,470])
+		var yScale = d3.scaleLinear().domain([0,40]).range([470,20])
+
+		//axis
+		xAxis = d3.axisBottom().scale(xScale).tickValues([1,2,3,4,5,6,7,8])//.tickSize(470)
+		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis)
+			.attr("transform", `translate(0,470)`)
+
+		yAxis = d3.axisRight().scale(yScale).ticks(5).tickSize(-470)//坐标轴在左去掉tickSize
+		d3.select("#placeholder1").append("g").attr("id", "yAxisG").call(yAxis)
+			.attr("transform", `translate(470,0)`)
+		d3.selectAll("#yAxisG  g.tick").style("fill", blue2) //?
+
+		// loop according to key
+		Object.keys(incomingData[0]).forEach(key =>{
+			console.log("check key", key)
+			if(key != "day"){
+				var movieArea = d3.line()
+									.x(d => xScale(d.day))
+									.y(d => yScale(d[key]))
+									.curve(d3.curveCardinal)
+				d3.select("#placeholder1")
+					.append("path")
+					.attr("d", movieArea(incomingData))
+					.attr("id", key + "_Area")
+					.style("fill", "none")
+					.style("stroke", gray1)
+					.style("opacity", 0.8)
+			}
+
+		})
+
+
+
+
+		
+
+	}
+	</script>
+</body>
+</html>
