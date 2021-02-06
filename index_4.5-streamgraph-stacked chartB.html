@@ -7,7 +7,7 @@
 </head>
 <body>
 	<div> 
-	<svg id="placeholder1"; style="width:600px; height:500px; border: 1px"></svg>
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
 	</div>
 	<div> 
 	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
@@ -46,7 +46,7 @@
 		var yScale = d3.scaleLinear().domain([0,40]).range([470,20])
 
 		//axis
-		xAxis = d3.axisBottom().scale(xScale).tickValues([1,2,3,4,5,6,7,8])//.tickSize(470)
+		xAxis = d3.axisBottom().scale(xScale)//.tickValues([1,2,3,4,5,6,7,8])//.tickSize(470)
 		d3.select("#placeholder1").append("g").attr("id", "xAxisG").call(xAxis)
 			.attr("transform", `translate(0,470)`)
 
@@ -56,15 +56,17 @@
 		//d3.selectAll("g.tick").style("fill", blue2) //?
 
 		// loop according to key
-		Object.keys(incomingData[0]).slice(1).forEach(key =>{
+		Object.keys(incomingData[0]).slice(5).forEach(key =>{
 			//console.log("check key", key)
 			//if(key != "day"){
 				var movieArea = d3.area()
 									.x(d => xScale(d.day))
-									.y0((d,i)=> 0 + i*10)
+									.y0(d=>470+(470-yScale(d[key])))
 									.y1(d => yScale(d[key]))
 									.curve(d3.curveCardinal)
-				d3.select("#placeholder1")
+									// .closePath(z)
+
+				var test = d3.select("#placeholder1")
 					.append("path")
 					.attr("d", movieArea(incomingData))
 					.attr("id", key + "_Area")
@@ -72,7 +74,8 @@
 					.style("stroke", gray2)
 					.style("stroke-width", "5px")
 					.style("opacity", 0.8)
-					// .style("fill", gray0)
+
+
 			//}
 
 		})
