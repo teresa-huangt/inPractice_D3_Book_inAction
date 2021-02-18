@@ -42,8 +42,8 @@
 	
 	function StreamgraphViz(incomingData){
 		//scale
-		var xScale = d3.scaleLinear().domain([1,8]).range([20,470])
-		var yScale = d3.scaleLinear().domain([0,40]).range([470,20])
+		var xScale = d3.scaleLinear().domain([1,10]).range([20,470])
+		var yScale = d3.scaleLinear().domain([-40,40]).range([470,20])
 
 		//axis
 		xAxis = d3.axisBottom().scale(xScale)//.tickValues([1,2,3,4,5,6,7,8])//.tickSize(470)
@@ -61,8 +61,10 @@
 			//if(key != "day"){
 				var movieArea = d3.area()
 									.x(d => xScale(d.day))
-									.y0(d=>470+(470-yScale(d[key])))
-									.y1(d => yScale(d[key]))
+									// .y0(d=>470+(470-yScale(d[key])))
+									// .y1(d => yScale(d[key]))
+									.y0(d => yScale(d[key]))
+             						.y1(d => yScale(-d[key]))
 									.curve(d3.curveCardinal)
 									// .closePath(z)
 
@@ -70,7 +72,7 @@
 					.append("path")
 					.attr("d", movieArea(incomingData))
 					.attr("id", key + "_Area")
-					.style("fill", "none")
+					.style("fill", green0)
 					.style("stroke", gray2)
 					.style("stroke-width", "5px")
 					.style("opacity", 0.8)
