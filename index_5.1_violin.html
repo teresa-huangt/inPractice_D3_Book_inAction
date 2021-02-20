@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+	// create random numbers
+	var normal = d3.randomNormal()
+	var sample1 = d3.range(100).map(d=>normal())
+	var sample2 = d3.range(100).map(d=>normal())
+	var sample3 = d3.range(100).map(d=>normal())//100个 0-1
+	//console.log("check sample3", sample3) 
+
+	var fillScale = d3.scaleOrdinal()
+  						.range([green0, green1, green2]);
+
+	var his2layout = d3.histogram()
+	his2layout.domain([-3,3])
+				.thresholds([ -3, -2.5, -2, -1.5, -1,-0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3 ])
+				.value(d=>d)
+	//console.log("check his2layout", his2layout)
+	//his2format = his2layout(d) //不同之前嵌套在function（incomingdata）中
+
+	var yScale = d3.scaleLinear().domain([-3,3]).range([400,0])
+	var yAxis = d3.axisRight().scale(yScale).tickSize(400)
+	d3.select("#placeholder1").append("g").attr("id", "yAxis").call(yAxis)//.attr("transform", "translate(400,0)")
+
+
+	var area = d3.area()
+					.x0(d=>-d.length)
+					.x1(d=>d.length)
+					.y(d=>yScale(d.x0))
+					.curve(d3.curveCatmullRom)
+
+
+	d3.select("#placeholder1")
+		.selectAll("g.violin") //selectAll not select
+		.data([sample1, sample2, sample3])
+		.enter()
+		.append("g")
+		.attr("class", "violin")
+		.attr("transform", (d,i)=>`translate(${i*100+50},0)`)
+		.append("path")
+		.style("stroke", gray2)
+		.style("stroke-width", "5px")
+		.style("fill", (d,i)=>fillScale(i))
+		.attr("d", d=>{
+			console.log("check d.length", d.length)
+			console.log("check his2format",his2layout(d))
+			console.log("check area his2format",area(his2layout(d)))
+			return area(his2layout(d))
+		})
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
