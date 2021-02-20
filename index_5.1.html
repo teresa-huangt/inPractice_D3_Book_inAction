@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+	//
+	d3.json("tweets.json").then(data=>{histogram(data.tweets)})
+	
+	function histogram(incomingData){
+		var xScale = d3.scaleLinear().domain([0,5]).range([0,500])
+		var yScale = d3.scaleLinear().domain([0,10]).range([400,0])
+		var xAxis = d3.axisBottom().scale(xScale).ticks(5)
+		d3.select("#placeholder1").append("g").attr("id", "xAxis").attr("transform", "translate(0,400)").call(xAxis)
+
+		// 3 steps for histogram
+			//create a new layout function
+			var his2layout = d3.histogram()
+			console.log("check step1 create a new layout function", his2layout)
+			// determing the values the histogram bins for
+			his2layout.domain([0,5])
+						.thresholds([0,1,2,3,4,5])
+						.value(d=>d.favorites.length)
+			console.log("check step2 determing the values the histogram bins for", his2layout)
+			//format the data
+			var his2format=his2layout(incomingData)
+			console.log("check step3 format the data", his2format)
+
+		d3.select("#placeholder1")
+			.selectAll("rect")
+			.data(his2format)
+			.enter()
+			.append("rect")
+			.attr("x", d=>{
+				//console.log("check d.x0",[d.x0, xScale(d.x0)])
+				return xScale(d.x0)
+			})
+			.attr("y", d=>yScale(d.length))
+			.attr("width", d=>xScale(d.x1-d.x0)-2)
+			.attr("height", d=>400-yScale(d.length))
+			.style("fill", green1)
+			.on("click", updateRetweets) //f //function加上（）后直接执行一次click
+
+		d3.selectAll("g.tick").select("text").attr("dx", 50)
+
+		function updateRetweets(){
+			console.log("check click", "one click")
+			his2layout.value(d=>d.retweets.length)
+			his2format=his2layout(incomingData)
+			console.log("check data after click", his2format)
+
+
+			d3.selectAll("rect")
+			.data(his2format)
+			.transition()
+			.duration(500)
+			.attr("x", d=>xScale(d.x0))
+			.attr("y", d=>yScale(d.length))
+			.attr("height", d=>400-yScale(d.length))
+			.style("fill", blue1)
+		}
+			
+			
+	}
+
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
