@@ -47,7 +47,7 @@
 
 	var his2layout = d3.histogram()
 	his2layout.domain([-3,3])
-				.thresholds([ -3, -2.5, -2, -1.5, -1,-0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3 ])
+				.thresholds([ -3, -2.5, -2, -1.5, -1,-0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3 ])//垂直发现设置几点进行连接，多=自然
 				.value(d=>d)
 	//console.log("check his2layout", his2layout)
 	//his2format = his2layout(d) //不同之前嵌套在function（incomingdata）中

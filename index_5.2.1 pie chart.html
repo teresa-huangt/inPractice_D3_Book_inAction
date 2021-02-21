@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+
+	// pie
+	var pieChart = d3.pie()
+	var yourPie = pieChart([1,1,2]) //改成1 2 1 没变化
+	// arc
+	var newArc = d3.arc()
+	newArc.innerRadius(0).outerRadius(100)
+	
+	console.log(newArc(yourPie[0])) //下面data(pieChart),attr("d",newArc) //运行时data里面的每一个一次传给d
+
+	//color
+	var fillScale = d3.scaleOrdinal().range([green0, green1, green2])
+
+	d3.select("#placeholder1")
+		.append("g")
+		.attr("transform", "translate(250,250)")
+		.selectAll("path")
+		.data(yourPie)
+		.enter()
+		.append("path")
+		.attr("d", newArc)
+		.style("fill",(d,i)=>fillScale(i))
+		.attr("stroke", gray1)
+		.attr("stroke-width", "5px")
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
