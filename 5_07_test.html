@@ -38,6 +38,7 @@
           d.numFavorites = d3.sum(d.values, p => p.favorites.length);
           d.numRetweets = d3.sum(d.values, p => p.retweets.length);
         });
+        console.log("check new nestedTweets after foeach",nestedTweets)
         
         var pieChart = d3.pie();
         

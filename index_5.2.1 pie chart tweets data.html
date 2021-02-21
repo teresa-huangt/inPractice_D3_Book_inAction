@@ -40,40 +40,59 @@
 	d3.json("tweets.json").then(data=>{catchPen(data.tweets)})
 	
 	function catchPen(incomingData){
-		console.log("incomingDate", incomingData)
-		console.log("chech object k", Object.keys(incomingData))
+
+		// console.log("incomingDate", incomingData)
+		// console.log("chech object k", Object.keys(incomingData))
 
 		var groupTweets = d3.group(incomingData, d => d.user)
-		console.log(groupTweets)
+		console.log("groupTweets by user",groupTweets)
+		// console.log("check object k groupTweets", Object.keys(groupTweets))
+
+		groupTweets.forEach(d => {
+			console.log("check d in foreach", d)
+			d.numTweets = d.length// console.log(d.length)
+			d.sumFavorites = d3.sum(d, p => p.favorites.length)
+			d.sumRetweets = d3.sum(d, p => p.retweets.length)
+		})
+		// ? MARKER 问题出现在这里新增的属性停留在d没跟新到groupTweets
+		console.log("check new groupTweets",groupTweets)
+
+	// pie
+	var pieChart = d3.pie()
+	
+	// arc
+	var newArc = d3.arc()
+	newArc.innerRadius(20).outerRadius(100)
+
+	// 
+	pieChart.value(d => d.numTweets)
+	var yourPie = pieChart(groupTweets) 
+	
+
+	//color
+	var fillScale = d3.scaleOrdinal().range([green0, green1, green2])
+
+	d3.select("#placeholder1")
+		.append("g")
+		.attr("transform", "translate(250,250)")
+		.selectAll("path")
+		.data(yourPie)
+		.enter()
+		.append("path")
+		.attr("d", newArc)
+		.style("fill",(d,i)=>fillScale(i))
+		.attr("stroke", gray1)
+		.attr("stroke-width", "5px")
+
+
+
 
 	}
 
 
 
 
-	// // pie
-	// var pieChart = d3.pie()
-	// var yourPie = pieChart([1,1,2]) //改成1 2 1 没变化
-	// // arc
-	// var newArc = d3.arc()
-	// newArc.innerRadius(0).outerRadius(100)
-	
-	// console.log(newArc(yourPie[0])) //下面data(pieChart),attr("d",newArc) //运行时data里面的每一个一次传给d
 
-	// //color
-	// var fillScale = d3.scaleOrdinal().range([green0, green1, green2])
-
-	// d3.select("#placeholder1")
-	// 	.append("g")
-	// 	.attr("transform", "translate(250,250)")
-	// 	.selectAll("path")
-	// 	.data(yourPie)
-	// 	.enter()
-	// 	.append("path")
-	// 	.attr("d", newArc)
-	// 	.style("fill",(d,i)=>fillScale(i))
-	// 	.attr("stroke", gray1)
-	// 	.attr("stroke-width", "5px")
 
 
 
