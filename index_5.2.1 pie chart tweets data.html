@@ -37,35 +37,38 @@
 	
 
 	// load data
-	d3.json("tweets.json").then(data=>{catchPen(data.tweets)})
+	d3.json("tweets.json").then(data=>{catchPen(data)})
 	
 	function catchPen(incomingData){
-
-		// console.log("incomingDate", incomingData)
-		// console.log("chech object k", Object.keys(incomingData))
-
-		var groupTweets = d3.group(incomingData, d => d.user)
+		incomingData = incomingData.tweets
+		console.log("incomingDate", incomingData)
+ 
+		var groupTweets = d3.groups(incomingData, d => d.user) //groups=array; group=map
 		console.log("groupTweets by user",groupTweets)
-		// console.log("check object k groupTweets", Object.keys(groupTweets))
 
-		groupTweets.forEach(d => {
-			console.log("check d in foreach", d)
-			d.numTweets = d.length// console.log(d.length)
+		groupTweets.forEach((d,i) => {
+			d=d[1] //比起example要用的总是在xx.[1]中格式
+			console.log("check d in foreach", [d])
+			d.numTweets = d.length
 			d.sumFavorites = d3.sum(d, p => p.favorites.length)
 			d.sumRetweets = d3.sum(d, p => p.retweets.length)
 		})
-		// ? MARKER 问题出现在这里新增的属性停留在d没跟新到groupTweets
 		console.log("check new groupTweets",groupTweets)
 
+
+
 	// pie
-	var pieChart = d3.pie()
+	var pieChart = d3.pie().sort(null)
 	
 	// arc
 	var newArc = d3.arc()
 	newArc.innerRadius(20).outerRadius(100)
 
-	// 
-	pieChart.value(d => d.numTweets)
+	// 加载数据really
+	pieChart.value(d => {
+          console.log("check d in piechart value",d)
+          return d[1].numTweets
+    });
 	var yourPie = pieChart(groupTweets) 
 	
 
@@ -81,25 +84,74 @@
 		.append("path")
 		.attr("d", newArc)
 		.style("fill",(d,i)=>fillScale(i))
-		.attr("stroke", gray1)
+		.attr("stroke", gray2)
 		.attr("stroke-width", "5px")
+		// .on("start")
+		.on("click", change)
+		// .on("end")
+
+	// update data transition //4-4可以，4-2 sumRetweet异常运行
+	function change(){
+
+		pieChart.value(d =>d[1].sumFavorites) //4-4可以，4-2 sumRetweet异常运行
+		yourPie = pieChart(groupTweets) 
+
+		d3.selectAll("path")
+			.data(yourPie)
+			.transition()
+			.duration(2000)
+			.attr("d", newArc)
+
+
+	}
+
+	// 4-4 4-2
+	// function change(){
+
+	// 	pieChart.value(d =>d[1].sumFavorites) 
+	// 	favoritesPie = pieChart(groupTweets) 
+	// 	pieChart.value(d =>d[1].sumFavorites) 
+	// 	favoritesPie = pieChart(groupTweets) 
+		
+	// 	d3.selectAll("path")
+	// 		.data(yourPie)
+	// 		.transition()
+	// 		.duration(2000)
+	// 		.attr("d", newArc)
+
+
+	// }
+
+
+
+
+	// 嵌套两个未成功
+	// function change(){
+
+	// 	var randomOne = d3.randomInt(0,1)()
+
+	// 	pieChart.value(d =>{
+	// 		var chooseInventory = [d[1].sumFavorites,d[1].sumRetweets]
+	// 		console.log("check randomOne", randomOne)
+
+	// 		console.log("check choose waht", chooseInventory[randomOne])
+	// 		return chooseInventory[randomOne]
+	// 	})
+	// 	yourPie = pieChart(groupTweets) 
+	// 	d3.selectAll("path")
+	// 		.data(yourPie)
+	// 		.transition()
+	// 		.duration(1000)
+	// 		.attr("d", newArc)
+
+
+	// }
+
 
 
 
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	</script>

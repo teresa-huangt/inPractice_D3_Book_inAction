@@ -47,7 +47,10 @@
           .innerRadius(20)
           .outerRadius(100);
         
-        pieChart.value(d => d.numTweets);
+        pieChart.value(d => {
+          console.log("check d in piechart value",d)
+          return d.numTweets
+        });
         
         var yourPie = pieChart(nestedTweets);
         
