@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<!-- <script src="https://d3js.org/d3.v6.min.js"></script> -->
+	<!-- <script
+	src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js">
+	</script> -->
+
+	
+	<!-- both previous version -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.8/d3.min.js" type="text/JavaScript"></script>
+	<script src="d3-sankey.js" type="text/JavaScript"></script>
+	
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+
+	// load data
+	// d3.json("sitestats.json").then(data=>{sankeyDraw(data)})
+	d3.json("sitestats.json", sankeyDraw)
+
+	function sankeyDraw(incomingData){
+
+		console.log("check incoming data", incomingData)//?dy sy哪里生成
+		// sankey innit
+		var sankey = d3.sankey()
+          .nodeWidth(2)
+          .nodePadding(200)
+          .size([460, 460])
+          .nodes(incomingData.nodes)
+          .links(incomingData.links)
+          .layout(1000)
+
+        var intensityRamp = d3.scaleLinear()
+          						.domain([0,d3.max(incomingData.links, d => d.value) ])
+         						.range([gray2, green2])
+
+		// svg
+		var svg = d3.select("#placeholder1")
+			.append("g")
+            .attr("transform", "translate(20,20)")
+            .attr("id", "sankeyG")
+
+        // sankey-link 
+        // d3.select NOT svg.select
+        d3.select("#sankeyG")
+        	.selectAll(".link")
+        	.data(incomingData.links)
+        	.enter()
+        	.append("path")
+        	.attr("class", "link")
+        	.attr("d", sankey.link())
+        	.style("fill", "none")
+        	.style("stroke", d=>intensityRamp(d.value))
+        	.style("stroke-width", d=>{
+        		console.log("check d in incomingData.link",d)
+        		return d.dy
+        	})
+        	.style("stroke-opacity", 0.5)
+        	.sort((a,b)=>{ //一对links，2和1，4和3
+        		// console.log("check d", d)
+        		console.log("check a b", [a,b])
+        		a.dy - b.dy
+        	})
+
+          // mouse action 1
+          // 选中所有link
+          // .on("mouseover",()=>{
+          //   d3.selectAll("path.link").style("stroke-opacity", 0.8)
+          // })
+          // 只选中某一骨节
+          .on("mouseover",function(){
+            d3.select(this).style("stroke-opacity", 0.8)
+          })
+          .on("mouseout",()=>{
+            d3.selectAll("path.link").style("stroke-opacity", 0.5)
+          })
+
+    	// sankey-node
+    	d3.select("#sankeyG")
+        	.selectAll(".node")
+        	.data(incomingData.nodes)
+        	.enter()
+        	.append("g")
+        	.attr("class", "node")
+        	.attr("transform", d => `translate(${d.x},${d.y})`)
+
+    	d3.selectAll(".node")
+    		.append("rect")
+            .attr("height", d => d.dy)
+            .attr("width", 20)
+            .style("fill", purple2)
+            .style("stroke", gray2)
+
+     	// // change to circle noedes
+     	// d3.selectAll(".node")
+    		// .append("circle")
+      //       //.attr("height", d => d.dy)
+      //       .attr("r", d => d.dy/2)
+      //       .style("cy", d => d.dy/2)
+      //       .style("fill", gray2)
+
+
+        d3.selectAll(".node")
+        	.append("text")
+            .attr("x", 0)
+            .attr("y", d => d.dy / 2)
+            .attr("text-anchor", "middle")
+            .style("fill", "black")
+            .text(d => d.name);
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
