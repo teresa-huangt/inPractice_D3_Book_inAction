@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+
+	// load data
+	d3.json("tweets.json").then(data=>{catchPen(data)})
+	
+	function catchPen(incomingData){
+		incomingData = incomingData.tweets
+		// console.log("incomingDate", incomingData)
+ 
+		var groupTweets = d3.groups(incomingData, d => d.user) //groups=array; group=map
+		// console.log("groupTweets by user",groupTweets)
+
+		groupTweets.forEach((d,i) => {
+			d=d[1] //比起example要用的总是在xx.[1]中格式
+			// console.log("check d in foreach", [d])
+			d.numTweets = d.length
+			d.sumFavorites = d3.sum(d, p => p.favorites.length)
+			d.sumRetweets = d3.sum(d, p => p.retweets.length)
+		})
+		// console.log("check new groupTweets",groupTweets)
+
+
+
+	// pie
+	var pieChart = d3.pie()
+
+	pieChart.sort(null)
+			.value(d => d[1].numTweets)
+	var tweetsPie = pieChart(groupTweets) 
+
+	pieChart.value(d => d[1].sumRetweets)
+	var retweetsPie = pieChart(groupTweets)
+
+	groupTweets.forEach((d,i)=>{
+		d=d[1]
+		console.log("check",[d])
+
+		d.tweetsSlice = tweetsPie[i]
+		console.log("check tweetsPie:", tweetsPie[i])
+		d.retweetsSlice = retweetsPie[i]
+	})
+	console.log("check groupTweets two new parts", groupTweets)
+	
+	// arc
+	var newArc = d3.arc()
+	newArc.innerRadius(20).outerRadius(100) 
+
+	// color
+	var fillScale = d3.scaleOrdinal().range([green0, green1, green2, blue0])
+
+	// draw
+	d3.select("#placeholder1")
+		.append("g")
+		.attr("transform", "translate(250,250)")
+		.selectAll("path")
+		.data(groupTweets, d=> d.key)
+		.enter()
+		.append("path")
+		.attr("d", d=>newArc(d[1].tweetsSlice))
+		.style("fill",(d,i)=>fillScale(i))
+		.attr("stroke", gray2)
+		.attr("stroke-width", "5px")
+
+
+	//
+	d3.selectAll("path")
+		.transition()
+		.duration(1000)
+		.attrTween("d", arcTween)
+
+	function arcTween(d){
+		return t=>{
+			var interpolateStartAngle = d3.interpolate(d[1].tweetsSlice.startAngle,d[1].retweetsSlice.startAngle)
+			var interpolateEndAngle = d3.interpolate(d[1].tweetsSlice.endAngle,d[1].retweetsSlice.endAngle)
+
+			d.startAngle = interpolateStartAngle(t)
+			d.endAngle = interpolateEndAngle(t)
+			return newArc(d)
+		}
+
+	}
+
+
+
+
+	}
+
+
+	</script>
+</body>
+</html>

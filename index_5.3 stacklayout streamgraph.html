@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+
+	// load data
+	d3.csv("movies.csv").then(d=>drawVis(d))
+
+	function drawVis(incomingData){
+		var xScale = d3.scaleLinear().domain([0,10]).range([0,500])
+		var yScale = d3.scaleLinear().domain([0,100]).range([500,0])
+
+		var movies = ["titanic", "avatar", "akira", "frozen", "deliverance", "avengers"]
+		var fillScale = d3.scaleOrdinal().domain(movies).range([green0, green1, green2, blue0, blue1, blue2])
+			
+		stackLayout = d3.stack().keys(movies)
+		var stackArea = d3.area()
+							.x((d,i)=>xScale(i))
+							.y0(d=>yScale(d[0]))
+							.y1(d=>yScale(d[1]))
+		// fig5.14
+		stackLayout.offset(d3.stackOffsetSilhouette).order(d3.stackOrderInsideOut)
+		stackArea.curve(d3.curveBasis)
+		yScale.domain([-50, 50])
+
+		var svg = d3.select("#placeholder1")
+			.selectAll("path")
+			.data(stackLayout(incomingData))
+			.enter()
+			.append("path")
+			.style("fill", d=>fillScale(d.key))
+			.attr("d", d=>stackArea(d))
+
+		svg.selectAll("text")
+			.data(incomingData.columns)
+			.enter()
+			.append("text")
+			.text(function(d){
+				console.log("check incomingdata", incomingData)
+				return d.key
+			})
+			.attr("x", 10)
+			.attr("y", 500)
+			.attr("font", "sans-serif")
+			.attr("font-size", "5px")
+			.attr("fill", "orange")
+
+	}
+
+
+
+	</script>
+</body>
+</html>
