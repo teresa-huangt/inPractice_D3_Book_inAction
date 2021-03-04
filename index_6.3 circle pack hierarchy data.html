@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+	<div> 
+	<svg id="placeholder1"; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder2"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder3"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div> 
+	<svg id="placeholder4"; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+	// const colors, reusable from light to dark
+	green0 = "#c8f7c5"
+	green1 = "#29f1c3"
+	green2 = "#00e640"
+	blue0 = "#a2ded0"
+	blue1 = "#86e2d5"
+	blue2 = "#4ecdc4"
+	purple0 = "#947cb0"
+	purple1 = "#a96dad"
+	purple2 = "#8c14fc"
+	gray1 = "#ececec"
+	gray0 = "#ecf0f1"
+	gray2 = "#6c7a89"
+	
+
+	// load data
+	d3.json("tweets.json").then(d=>drawCirclePack(d.tweets))
+
+  function drawCirclePack(incomingData){
+    // init data format
+    var groupTweets = d3.groups(incomingData, d=>d.user)
+    console.log("check groupTweets",groupTweets)
+
+    // pack
+    var packChart = d3.pack()
+    packChart.size([500, 500])
+    // console.log("check packChart",packChart)
+
+    var packableTweets = {id: "All Tweets", values: groupTweets}
+    console.log("check packableTweets",packableTweets)
+
+    var root = d3.hierarchy(packableTweets, d=>d.values)
+                  // .sum(d=>{
+                  //   console.log("check d",d)
+                  //   return d.retweets ? d.retweets.length + d.favorites.length + 1 : undefined
+                  // })
+                  .sum(()=>1) //?
+                  
+    console.log("check root", root)
+    console.log("check packChart(root)",packChart(root))
+    console.log("check packChart(root).descendants()", packChart(root).descendants())
+
+    // scale
+    var depthScale = d3.scaleOrdinal()
+                        .range([gray0, blue0, green0, purple0])
+    console.log("check color", depthScale(1))
+
+    // svg
+    var svg = d3.select("#placeholder1")
+                .append("g")
+                .attr("transform", "translate(100, 20)")
+
+    svg.selectAll("circle")
+        .data(packChart(root).descendants())
+        .enter()
+        .append("circle")
+        .attr("r", d=>d.r)
+        .attr("cx", d=>d.x)
+        .attr("cy", d=>d.y)
+        .style("fill", d=>depthScale(d.depth))
+        .style("stroke", gray2)
+
+ 
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
