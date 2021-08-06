@@ -37,35 +37,24 @@
 	
 
 	// load data
-	d3.json("tweets.json").then(d=>drawCirclePack(d.tweets))
+	d3.json("tweets.json").then(d=>drawTree(d.tweets))
 
-  function drawCirclePack(incomingData){
+    function drawTree(incomingData){
     // init data format
     var groupTweets = d3.groups(incomingData, d=>d.user)
     console.log("check groupTweets",groupTweets)
 
-    // pack
-    var packChart = d3.pack()
-    packChart.size([500, 500])
-    // console.log("check packChart",packChart)
-
     var packableTweets = {id: "All Tweets", values: groupTweets}
     console.log("check packableTweets",packableTweets)
 
-    var root = d3.hierarchy(packableTweets, d=>{
-        console.log("---check d", d)
-        console.log("===check d.value", d.values)
-        return d.values
-    })
-                  // .sum(d=>{
-                  //   console.log("check d",d)
-                  //   return d.retweets ? d.retweets.length + d.favorites.length + 1 : undefined
-                  // })
-                  .sum(()=>1) //?
-                  
+    var root = d3.hierarchy(packableTweets, d=>d.values)
     console.log("check root", root)
-    console.log("check packChart(root)",packChart(root))
-    console.log("check packChart(root).descendants()", packChart(root).descendants())
+
+    var treeChart = d3.tree()
+        treeChart.size([500,500]) 
+    var treeData = treeChart(root).descendants()
+    console.log("check treeData", treeData)
+                  
 
     // scale
     var depthScale = d3.scaleOrdinal()

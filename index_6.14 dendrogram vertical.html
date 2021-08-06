@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>book d3 in action</title>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+	<div>
+		<svg id="placeholder1" ; style="width:1600px; height:1500px; border: 1px"></svg>
+	</div>
+	<div>
+		<svg id="placeholder2" ; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div>
+		<svg id="placeholder3" ; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+	<div>
+		<svg id="placeholder4" ; style="width:600px; height:600px; border: 1px"></svg>
+	</div>
+
+
+	<script type="text/javascript">
+		// const colors, reusable from light to dark
+		green0 = "#c8f7c5"
+		green1 = "#29f1c3"
+		green2 = "#00e640"
+		blue0 = "#a2ded0"
+		blue1 = "#86e2d5"
+		blue2 = "#4ecdc4"
+		purple0 = "#947cb0"
+		purple1 = "#a96dad"
+		purple2 = "#8c14fc"
+		gray1 = "#ececec"
+		gray0 = "#ecf0f1"
+		gray2 = "#6c7a89"
+
+
+		// load data
+		d3.json("tweets.json").then(d => drawTree(d.tweets))
+
+		function drawTree(incomingData) {
+			// init data format
+			var groupTweets = d3.group(incomingData, d => d.user)
+			console.log("check groupTweets", groupTweets)
+
+			var packableTweets = { id: "All Tweets", values: groupTweets }
+			console.log("check packableTweets", packableTweets)
+
+			var root = d3.hierarchy(packableTweets, d => {
+				// Trick of migrating v4 to v6
+				if (!d.hasOwnProperty("values")) {
+					d['values'] = d[1];
+				}
+				// console.log("check d", d)
+				return d.values;
+			})
+
+			console.log("check root", root)
+
+			var treeChart = d3.tree()
+			treeChart.size([500, 500])
+
+			var treeData = treeChart(root).descendants()
+			console.log("check treeData", treeData)
+
+
+			// scale
+			var depthScale = d3.scaleOrdinal()
+				.range([blue0, green0, green1, purple0])
+			console.log("check color", depthScale(1))
+
+			// svg
+			d3.select("#placeholder1")
+				.append("g")
+				.attr("id", "treeG")
+				.attr("transform", "translate(60, 20)")
+				.selectAll("g")
+				.data(treeData)
+				.enter()
+				.append("g")
+				.attr("class", "node")
+				.attr("transform", d => `translate(${d.x},${d.y})`)
+
+			d3.selectAll("g.node")
+				.append("circle")
+				.attr("r", 10)
+				.style("fill", d => depthScale(d.depth))
+				.style("stroke", "white")
+				.style("stroke-width", "2px")
+
+			d3.select("#treeG").selectAll("line")
+				.data(treeData.filter(d => d.parent))
+				.enter().insert("line", "g")
+				.attr("x1", d => d.parent.x)
+				.attr("y1", d => d.parent.y)
+				.attr("x2", d => d.x)
+				.attr("y2", d => d.y)
+				.style("stroke", "black");
+		}
+	</script>
+</body>
+
+</html>

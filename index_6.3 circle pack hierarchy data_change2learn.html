@@ -52,11 +52,7 @@
     var packableTweets = {id: "All Tweets", values: groupTweets}
     console.log("check packableTweets",packableTweets)
 
-    var root = d3.hierarchy(packableTweets, d=>{
-        console.log("---check d", d)
-        console.log("===check d.value", d.values)
-        return d.values
-    })
+    var root = d3.hierarchy(packableTweets, d=>d.values)
                   // .sum(d=>{
                   //   console.log("check d",d)
                   //   return d.retweets ? d.retweets.length + d.favorites.length + 1 : undefined
